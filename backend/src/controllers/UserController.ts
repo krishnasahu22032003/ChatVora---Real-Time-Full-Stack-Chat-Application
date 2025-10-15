@@ -62,14 +62,15 @@ const parseddata = requiredbody.safeParse(req.body)
 if(!parseddata.success){
     return res.status(400).json({
         success:false,
-        message:"email and password are required"
+        message:"email and password are required",
+            errors: parseddata.error.format(),
     })
 }
 const {email,password}= parseddata.data
 try{
     const user = await UserModel.findOne({email})
     if(!user){
-        return res.status(403).json({
+        return res.status(401).json({
             success:false,
             message:"user does not exists , please signup first"
         })
@@ -77,7 +78,7 @@ try{
 
 const ok = await bcrypt.compare(password,user.password)
 if(!ok){
-    return res.status(403).json({
+    return res.status(401).json({
         success:false,
         message:"wrong password"
     })
@@ -100,7 +101,7 @@ if(!ok){
     });
 
 }catch(error){
-    console.error("Signin error:", error);
+    console.error("Signin error:", (error as Error).message);
     return res.status(500).json({ success: false, message: "Server error" });
 }
 

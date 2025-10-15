@@ -4,7 +4,7 @@ import { UserSignUp, UserLogIn, UserLogout } from "../controllers/UserController
 const UserRouter = express.Router()
 
 UserRouter.post("/signup", UserSignUp)
-UserRouter.get("/signin", UserLogIn)
+UserRouter.post("/signin", UserLogIn)
 UserRouter.get("/logout", UserLogout)
 
 export default UserRouter
