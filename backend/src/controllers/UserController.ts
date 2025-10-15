@@ -8,13 +8,20 @@ import JWT_SECRET from "../config/config.js"
 
 export const UserSignUp = async (req: Request, res: Response) => {
 
-    const reqiredbody = z.object({
-        username: z.string().min(3).max(50),
-        email: z.string().email().min(5).max(50),
-        password: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/,"Password must include uppercase, lowercase, number, and special character"),
-    })
+   const requiredbody = z.object({
+    username: z.string().min(3).max(50).transform((v) => v.trim()),
+    email: z.string().email().min(5).max(50).transform((v) => v.trim()),
+    password: z.string()
+      .min(8).max(128)
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/,
+        "Password must include uppercase, lowercase, number, and special character"
+      )
+      .transform((v) => v.trim()),
+  });
 
-const parseddata = reqiredbody.safeParse(req.body)
+
+const parseddata = requiredbody.safeParse(req.body)
 
 if(!parseddata.success){
     return res.status(400).json({
@@ -52,10 +59,16 @@ try{
 }
 export async function UserLogIn(req: Request, res: Response) {
 
-const requiredbody = z.object({
-    email: z.string().email().min(3).max(50),
-    password: z.string().min(8).regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/,"Password must include uppercase, lowercase, number, and special character")
-})
+  const requiredbody = z.object({
+    email: z.string().email().min(5).max(50).transform((v) => v.trim()),
+    password: z.string()
+      .min(8).max(128)
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/,
+        "Password must include uppercase, lowercase, number, and special character"
+      )
+      .transform((v) => v.trim()),
+  });
 
 const parseddata = requiredbody.safeParse(req.body)
 
@@ -107,5 +120,22 @@ if(!ok){
 
 }
 export async function UserLogout(req: Request, res: Response) {
-    res.send("logout endpoint ")
+   
+    try{
+          res.clearCookie("auth_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  });
+  return res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
+    }catch(error){
+    console.log("logout failed",(error as Error).message);
+    return res.status(500).json({ success: false, message: "Server error" });
+    }
+
+
+
 }
