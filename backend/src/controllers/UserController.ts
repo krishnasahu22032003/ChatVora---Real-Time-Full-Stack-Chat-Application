@@ -135,7 +135,5 @@ export async function UserLogout(req: Request, res: Response) {
     console.log("logout failed",(error as Error).message);
     return res.status(500).json({ success: false, message: "Server error" });
     }
-
-
-
+    
 }
