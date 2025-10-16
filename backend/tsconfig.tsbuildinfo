@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/config/config.ts","./src/controllers/usercontroller.ts","./src/email/emailhandlers.ts","./src/email/emailtemplates.ts","./src/lib/db.ts","./src/lib/resend.ts","./src/models/usermodel.ts","./src/routes/userroute.ts"],"version":"5.9.3"}
+{"root":["./src/index.ts","./src/config/config.ts","./src/controllers/usercontroller.ts","./src/email/emailhandlers.ts","./src/email/emailtemplates.ts","./src/lib/env.ts","./src/lib/db.ts","./src/lib/resend.ts","./src/models/usermodel.ts","./src/routes/userroute.ts"],"version":"5.9.3"}

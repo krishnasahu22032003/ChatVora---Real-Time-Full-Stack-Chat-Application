@@ -40,7 +40,7 @@ const {username,email,password} = parseddata.data
 if(await UserModel.findOne({email})){
 return res.status(409).json({
     success:false,
-    message:"user with this email already exists"
+    message:"Invalid Credentials"
 })
 }
 
@@ -109,7 +109,7 @@ const ok = await bcrypt.compare(password,user.password)
 if(!ok){
     return res.status(401).json({
         success:false,
-        message:"wrong password"
+        message:"Invalid Credentials"
     })
 }
  const token = jwt.sign({id:user._id},JWT_SECRET, {expiresIn:"7d"})
@@ -152,4 +152,12 @@ export async function UserLogout(req: Request, res: Response) {
     return res.status(500).json({ success: false, message: "Server error" });
     }
     
+}
+
+
+export async function UpdateProfile(req:Request,res:Response){
+
+
+
+  
 }
