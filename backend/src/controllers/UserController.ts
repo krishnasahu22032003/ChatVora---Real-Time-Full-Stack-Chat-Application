@@ -101,7 +101,7 @@ if(!ok){
  
     res.cookie("auth_token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production" ? false : true ,
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -122,7 +122,7 @@ if(!ok){
 export async function UserLogout(req: Request, res: Response) {
    
     try{
-          res.clearCookie("auth_token", {
+      res.clearCookie("auth_token", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
