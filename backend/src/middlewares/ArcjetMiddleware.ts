@@ -10,7 +10,7 @@ export const ArcjetProtection = async (req: Request, res: Response, next: NextFu
       url: req.originalUrl || req.url,
       ip: req.ip || req.socket.remoteAddress || "0.0.0.0", // fallback
       body: req.body,
-      cookies: req.cookies || {},
+      cookies: req.cookies || {}, 
     };
     // Run Arcjet protection
     const decision = await aj.protect(arcjetReq );

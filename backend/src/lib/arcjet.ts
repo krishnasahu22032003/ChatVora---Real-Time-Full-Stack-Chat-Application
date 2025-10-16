@@ -26,7 +26,7 @@ const aj = arcjet({
     // 3️⃣ Global rate limiting: 100 req/min per IP
     slidingWindow({
       mode: "LIVE",
-      max: 100,
+      max: 50,
       interval: 60, // seconds
     }),
   ],
@@ -39,8 +39,8 @@ export const authRouteRateLimit = arcjet({
     // Protect login/signup endpoints more strictly
     slidingWindow({
       mode: "LIVE",
-      max: 5,      // 5 requests
-      interval: 600, // per 10 minutes
+      max: 50,   
+      interval: 60, 
     }),
 detectBot({
   mode: "LIVE",
