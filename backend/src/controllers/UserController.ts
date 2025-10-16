@@ -1,9 +1,14 @@
 import type { Request, Response } from "express"
 import bcrypt from "bcrypt"
-import z, { success } from "zod"
+import z, { string, success } from "zod"
 import { UserModel } from "../models/UserModel.js"
 import jwt from "jsonwebtoken"
 import JWT_SECRET from "../config/config.js"
+import { sendWelcomeEmail } from "../email/emailHandlers.js"
+import "dotenv/config" 
+
+
+const clientURL = process.env.CLIENT_URL ?? "http://localhost:5173";
 
 
 export const UserSignUp = async (req: Request, res: Response) => {
@@ -42,10 +47,21 @@ return res.status(409).json({
 const hashedpassword = await bcrypt.hash(password,10)
 
 try{
-    await UserModel.create({username,email,password:hashedpassword})
+ const newUser =  await UserModel.create({username,email,password:hashedpassword})
+try{
+await sendWelcomeEmail(newUser.email,newUser.username,clientURL)
+
+}catch(error){
+  console.error("failed to send welcome email",error)
+}
+
     return res.status(201).json({
         success:true,
-        message:"user created in database"
+        message:"user created successfully",  user: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+      },
 
     })
 }catch(e){
