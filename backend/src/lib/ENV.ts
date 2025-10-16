@@ -1,0 +1,13 @@
+import "dotenv/config" 
+
+export const ENV = {
+    MONGO_URL:process.env.MONGO_URL,
+    JWT_USER_SECRET:process.env.JWT_USER_SECRET,
+    PORT:process.env.PORT,
+    NODE_ENV:process.env.NODE_ENV,
+    RESEND_API_KEY:process.env.RESEND_API_KEY,
+    EMAIL_FROM:process.env.EMAIL_FROM,
+    EMAIL_FROM_NAME:process.env.EMAIL_FROM_NAME,
+    CLIENT_URL:process.env.CLIENT_URL
+}
+

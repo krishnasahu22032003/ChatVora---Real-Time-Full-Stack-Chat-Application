@@ -1,5 +1,8 @@
 export function createWelcomeEmailTemplate(name:string, clientURL:string) {
+    // change it improve colors make it more beautiful
   return `
+
+  
   <!DOCTYPE html>
   <html lang="en">
   <head>

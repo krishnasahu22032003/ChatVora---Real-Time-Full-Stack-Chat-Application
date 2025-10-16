@@ -5,10 +5,10 @@ import { UserModel } from "../models/UserModel.js"
 import jwt from "jsonwebtoken"
 import JWT_SECRET from "../config/config.js"
 import { sendWelcomeEmail } from "../email/emailHandlers.js"
-import "dotenv/config" 
+import { ENV } from "../lib/ENV.js"
 
 
-const clientURL = process.env.CLIENT_URL ?? "http://localhost:5173";
+const clientURL = ENV.CLIENT_URL ?? "http://localhost:5173";
 
 
 export const UserSignUp = async (req: Request, res: Response) => {
@@ -117,8 +117,8 @@ if(!ok){
  
     res.cookie("auth_token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production" ? false : true ,
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: ENV.NODE_ENV === "production" ? false : true ,
+      sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -140,8 +140,8 @@ export async function UserLogout(req: Request, res: Response) {
     try{
       res.clearCookie("auth_token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    secure: ENV.NODE_ENV === "production",
+    sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
   });
   return res.status(200).json({
     success: true,
