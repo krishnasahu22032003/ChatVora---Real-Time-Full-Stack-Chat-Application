@@ -1,8 +1,14 @@
 import express from "express"
-import { SendMessage } from "../controllers/MessageController.js"
+import { getAllContacts } from "../controllers/MessageController.js"
+import { AuthRoute } from "../middlewares/AuthMiddleware.js"
+
+
 const messageRouter = express.Router()
 
-app.post("/send",SendMessage)
+messageRouter.get("/contacts",AuthRoute,getAllContacts)
+// messageRouter.get("/chats",getChatPartner)
+// messageRouter.get("/:id",getMessagesByUserId)
+// messageRouter.post("/send:id",SendMessages)
 
 
 export default messageRouter
