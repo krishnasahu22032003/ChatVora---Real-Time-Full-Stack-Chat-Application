@@ -2,8 +2,9 @@
 import type { Request, Response } from "express";
 import { UserModel } from "../models/UserModel.js";
 import mongoose from "mongoose";
-import z  from "zod";
+import z, { success }  from "zod";
 import UserMessage from "../models/Message.js";
+import cloudinary from "../lib/cloudinary.js";
 
 // define the expected request body shape
 interface GetAllContactsBody {
@@ -61,6 +62,39 @@ res.status(200).json(Messages)
 console.log("Error while Fetching messages",(error as Error).message)
 res.status(500).json({success:false,message:"Internal Server Error"})
 }
+}
 
+export const SendMessages = async (req:Request,res:Response)=>{
+
+try{
+
+  const {text,image} = req.body
+  const {id:receiverId} = req.params
+  const senderId =req.user._id
+
+  let imageUrl ;
+
+  if(image){
+    const uploadResponse = await cloudinary.uploader.upload(image)
+    imageUrl = uploadResponse.secure_url
+
+  }
+
+  const newMessage = new UserMessage({
+
+senderId,
+receiverId,
+text,
+image:imageUrl
+
+  })
+await newMessage.save()
+
+res.status(200).json(newMessage)
+}catch(error){
+console.log("Error in sending Messages",(error as Error).message)
+res.status(500).json({success:false,message:"Internal Server Error"})
+
+}
 
 }
