@@ -1,11 +1,21 @@
-import { Route, Routes } from "react-router"
+import { Navigate, Route, Routes } from "react-router"
 import ChatPage from "./pages/ChatPage"
 import LoginPage from "./pages/LoginPage"
 import SignupPage from "./pages/SignupPage"
-
+import { useAuthStore } from "./store/useAuthStore"
+import { useEffect } from "react"
+import PageLoading from "./components/pageLoading"
 function App() {
 
+  const{checkAuth,isCheckingAuth,authUser} = useAuthStore()
 
+  useEffect(()=>{
+    checkAuth()
+  },[checkAuth])
+  console.log(authUser)
+
+
+  if(isCheckingAuth) return <PageLoading/>
   return (
     <>
   <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden 
@@ -38,9 +48,9 @@ function App() {
       opacity-[0.025] mix-blend-overlay pointer-events-none" />
 
   <Routes>
-    <Route path="/" element={<ChatPage />} />
-    <Route path="/login" element={<LoginPage />} />
-    <Route path="/signup" element={<SignupPage />} />
+    <Route path="/" element={authUser ? <ChatPage /> : <Navigate to={"/login"}/>} />
+    <Route path="/login" element={ !authUser ? <LoginPage /> : <Navigate to={"/"}/>} />
+    <Route path="/signup" element={!authUser ? <SignupPage /> : <Navigate to={"/"}/>} />
   </Routes>
 </div>
 
