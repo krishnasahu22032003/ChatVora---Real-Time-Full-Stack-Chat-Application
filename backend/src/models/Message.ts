@@ -16,7 +16,7 @@ const UserMessageSchema = new mongoose.Schema<MessagesTypes>({
 senderId:{type:mongoose.Schema.Types.ObjectId,ref:"user",required:true},
 receiverId:{type:mongoose.Schema.Types.ObjectId,ref:"user",required:true},
 text:{type:String},
-image:{type:String },
+image:{type:String,trim:true,maxlength:2000 },
 
 },{timestamps:true})
 
