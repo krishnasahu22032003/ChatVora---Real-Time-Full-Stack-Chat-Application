@@ -5,6 +5,7 @@ import SignupPage from "./pages/SignupPage"
 import { useAuthStore } from "./store/useAuthStore"
 import { useEffect } from "react"
 import PageLoading from "./components/pageLoading"
+import { Toaster } from "react-hot-toast"
 function App() {
 
   const{checkAuth,isCheckingAuth,authUser} = useAuthStore()
@@ -54,6 +55,7 @@ function App() {
   </Routes>
 </div>
 
+<Toaster/>
     </>
   )
 }
