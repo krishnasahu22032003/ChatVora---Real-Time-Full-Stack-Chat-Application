@@ -2,7 +2,7 @@
 import type { Request, Response } from "express";
 import { UserModel } from "../models/UserModel.js";
 import mongoose from "mongoose";
-import z from "zod";
+import z, { success } from "zod";
 import UserMessage from "../models/Message.js";
 import cloudinary from "../lib/cloudinary.js";
 
@@ -71,6 +71,19 @@ export const SendMessages = async (req: Request, res: Response) => {
     const { text, image } = req.body
     const { id: receiverId } = req.params
     const senderId = req.user._id
+
+if(!text&&!image){
+return res.status(400).json({success:false,message:"text or image is required"})
+}
+
+if(senderId.equals(receiverId)){
+  return res.status(400).json({success:false,message:"cant send message to yourself"})
+}
+
+const receiverExists =  await UserModel.exists({_id:receiverId})
+if(!receiverExists){
+  return res.status(400).json({success:false,message:"receiver not found"})
+}
 
     let imageUrl;
 
