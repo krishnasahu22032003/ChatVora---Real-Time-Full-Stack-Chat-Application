@@ -4,7 +4,7 @@ import LoginPage from "./pages/LoginPage"
 import SignupPage from "./pages/SignupPage"
 import { useAuthStore } from "./store/useAuthStore"
 import { useEffect } from "react"
-import PageLoading from "./components/pageLoading"
+import PageLoading from "./components/PageLoading"
 import { Toaster } from "react-hot-toast"
 function App() {
 

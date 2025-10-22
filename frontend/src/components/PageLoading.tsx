@@ -1,7 +1,7 @@
 import { LoaderIcon } from 'lucide-react'
 
 
-const pageLoading = () => {
+const PageLoading = () => {
   return (
     <div className='items-center justify-center flex h-screen'>
       <LoaderIcon className='text-white z-10 size-10 animate-spin'/>
@@ -9,4 +9,4 @@ const pageLoading = () => {
   )
 }
 
-export default pageLoading
+export default PageLoading
