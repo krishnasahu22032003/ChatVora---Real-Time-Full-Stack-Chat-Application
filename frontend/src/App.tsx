@@ -49,9 +49,10 @@ function App() {
       opacity-[0.025] mix-blend-overlay pointer-events-none" />
 
   <Routes>
-    <Route path="/" element={authUser ? <ChatPage /> : <Navigate to={"/login"}/>} />
-    <Route path="/login" element={ !authUser ? <LoginPage /> : <Navigate to={"/"}/>} />
-    <Route path="/signup" element={!authUser ? <SignupPage /> : <Navigate to={"/"}/>} />
+    <Route path="/" element={authUser ? <ChatPage /> : <Navigate to={"/signin"}/>} />
+      <Route path="/signup" element={!authUser ? <SignupPage /> : <Navigate to={"/signin"}/>} />
+    <Route path="/signin" element={ !authUser ? <LoginPage /> : <Navigate to={"/"}/>} />
+  
   </Routes>
 </div>
 

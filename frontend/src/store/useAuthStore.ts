@@ -1,7 +1,7 @@
 // store/useAuthStore.ts
 import { create } from "zustand";
 import { AxiosInstance } from "../lib/Axios";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import toast from "react-hot-toast";
 
 export interface AuthUser {
@@ -54,33 +54,30 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   // ✅ Signup function
-  signup: async (data: SignUpRequest) => {
-    set({ isSigningup: true });
-    try {
-      const res = await AxiosInstance.post<AuthUser>("/user/signup", data);
-      set({ authUser: res.data });
-      toast.success("Account Created Successfully!");
-    } catch (e: unknown) {
-      if (axios.isAxiosError(e)) {
-        toast.error(e.response?.data?.message || "Something went wrong!");
-        console.error("Axios error:", e.message);
-      } else if (e instanceof Error) {
-        toast.error(e.message);
-        console.error("Error:", e.message);
-      } else {
-        toast.error("An unknown error occurred");
-        console.error("Unknown error:", e);
-      }
-    } finally {
-      set({ isSigningup: false });
+signup: async (data: SignUpRequest) => {
+  set({ isSigningup: true });
+  try {
+    await AxiosInstance.post("/user/signup", data);
+    toast.success("Account Created Successfully!");
+    // DO NOT set authUser here
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e)) {
+      toast.error(e.response?.data?.message || "Something went wrong!");
+    } else if (e instanceof Error) {
+      toast.error(e.message);
+    } else {
+      toast.error("An unknown error occurred");
     }
-  },
+  } finally {
+    set({ isSigningup: false });
+  }
+},
 
   // ✅ Login function
   login: async (data: LoginRequest) => {
     set({ isLoggingIn: true });
     try {
-      const res = await AxiosInstance.post<AuthUser>("/user/login", data);
+      const res = await AxiosInstance.post<AuthUser>("/user/signin", data);
       set({ authUser: res.data });
       toast.success("Logged in Successfully!");
     } catch (e: unknown) {

@@ -11,14 +11,15 @@ import {
   CheckCircle2Icon,
   XCircleIcon,
 } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
-
+import toast from "react-hot-toast";
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({ fullname: "", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const { signup, isSigningup } = useAuthStore();
+  const navigate = useNavigate();
 
   // Password validation
   const passwordChecks = {
@@ -30,14 +31,23 @@ const SignupPage = () => {
   };
   const allValid = Object.values(passwordChecks).every(Boolean);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  // Handle form submit
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!allValid) return;
-    signup({
-      username: formData.fullname,
-      email: formData.email,
-      password: formData.password,
-    });
+
+    try {
+      await signup({
+        username: formData.fullname,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      toast.success("Signup successful!");
+      navigate("/signin"); // redirect to login page
+    } catch (error) {
+      toast.error("Signup failed. Please try again.");
+    }
   };
 
   return (
@@ -127,11 +137,11 @@ const SignupPage = () => {
 
                   {/* Password Rules Inline */}
                   {formData.password && (
-                    <div className="mt-3 flex gap-2 text-sm">
+                    <div className="mt-3 flex  gap-2 text-sm">
                       {Object.entries(passwordChecks).map(([rule, valid]) => (
                         <div
                           key={rule}
-                          className={`flex items-center gap-1 ${
+                          className={`flex flex-wrap items-center gap-1 ${
                             valid ? "text-cyan-400" : "text-slate-500"
                           }`}
                         >
@@ -172,7 +182,7 @@ const SignupPage = () => {
                   </motion.button>
 
                   <div className="mt-3 text-center text-cyan-300 text-[14px]">
-                    <Link to="/login" className="hover:text-pink-400 transition-colors duration-300">
+                    <Link to="/signin" className="hover:text-pink-400 transition-colors duration-300">
                       Already have an account? Login
                     </Link>
                   </div>
