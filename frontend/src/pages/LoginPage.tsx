@@ -151,12 +151,12 @@ const LoginPage = () => {
                     }`}
                     type="submit"
                   >
-                    {isLoggingIn ? <LoaderIcon className="mx-auto h-5 w-5 animate-spin text-cyan-300" /> : "Create Account"}
+                    {isLoggingIn ? <LoaderIcon className="mx-auto h-5 w-5 animate-spin text-cyan-300" /> :  <span className="text-lg" >Login</span> }
                   </motion.button>
 
                   <div className="mt-3 text-center text-cyan-300 text-[14px]">
                     <Link to="/signin" className="hover:text-pink-400 transition-colors duration-300">
-                      Already have an account? Login
+                   Don't have an account? Create Account
                     </Link>
                   </div>
                 </div>
