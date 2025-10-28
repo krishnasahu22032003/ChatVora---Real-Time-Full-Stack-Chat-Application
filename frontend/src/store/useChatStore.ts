@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { AxiosInstance } from "../lib/Axios";
+import toast from "react-hot-toast";
 
 interface ChatStore {
   allContacts: any[];
@@ -36,4 +38,28 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
   setActiveTab: (tab: string) => set({ activeTab: tab }),
   setSelectedUser: (selectedUser: any | null) => set({ selectedUser }),
+  getAllContacts: async () => {
+    set({ isUsersLoading: true })
+    try {
+      const res = await AxiosInstance.get("/messages/contacts")
+      set({ allContacts: res.data })
+    } catch (error: any) {
+      toast.error(error.response.data.message)
+    } finally {
+      set({ isUsersLoading: false })
+    }
+  },
+  getMyChatPartner: async () => {
+    set({ isUsersLoading: true })
+    try {
+      const res = await AxiosInstance.get("/messages/chats")
+      set({ chats: res.data })
+    } catch (error: any) {
+      toast.error(error.response.data.message)
+    } finally {
+      set({ isUsersLoading: false })
+    }
+
+
+  }
 }));
