@@ -155,7 +155,7 @@ const LoginPage = () => {
                   </motion.button>
 
                   <div className="mt-3 text-center text-cyan-300 text-[14px]">
-                    <Link to="/signin" className="hover:text-pink-400 transition-colors duration-300">
+                    <Link to="/signup" className="hover:text-pink-400 transition-colors duration-300">
                    Don't have an account? Create Account
                     </Link>
                   </div>
