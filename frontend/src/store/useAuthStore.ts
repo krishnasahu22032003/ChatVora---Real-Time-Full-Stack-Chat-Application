@@ -22,6 +22,12 @@ export interface LoginRequest {
   password: string;
 }
 
+interface UpdateProfileData {
+  name?: string;
+  email?: string;
+  avatar?: string;
+}
+
 interface AuthState {
   authUser: AuthUser | null;
   isCheckingAuth: boolean;
@@ -115,4 +121,19 @@ signup: async (data: SignUpRequest) => {
       }
     }
   },
+updateProfile: async (data: UpdateProfileData): Promise<void> => {
+  try {
+    const res = await AxiosInstance.put("/user/UpdateProfile", data);
+    set({ authUser: res.data });
+    toast.success("Profile updated successfully");
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log("Error in update profile:", error);
+      toast.error(error.response?.data?.message || "Something went wrong");
+    } else {
+      console.error("Unexpected error:", error);
+      toast.error("An unexpected error occurred");
+    }
+  }
+},
 }));
