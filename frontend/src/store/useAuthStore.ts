@@ -8,7 +8,7 @@ export interface AuthUser {
   _id: string;
   username: string;
   email: string;
-  // add other fields if needed
+ profilePic:Base64URLString|ArrayBuffer|null
 }
 
 export interface SignUpRequest {
@@ -26,6 +26,7 @@ interface UpdateProfileData {
   name?: string;
   email?: string;
   avatar?: string;
+  profilePic:Base64URLString|ArrayBuffer|null
 }
 
 interface AuthState {
@@ -37,6 +38,7 @@ interface AuthState {
   login: (data: LoginRequest) => Promise<void>;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
+   updateProfile: (data: UpdateProfileData) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({

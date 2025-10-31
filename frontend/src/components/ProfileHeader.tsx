@@ -8,22 +8,27 @@ const mouseClickSound = new Audio("/sounds/mouse-click.mp3");
 function ProfileHeader() {
   const { logout, authUser, updateProfile } = useAuthStore();
   const { isSoundEnabled, toggleSound } = useChatStore();
-  const [selectedImg, setSelectedImg] = useState(null);
 
-  const fileInputRef = useRef(null);
+  const [selectedImg, setSelectedImg] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
+  // ✅ Strongly typed event
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
-    reader.readAsDataURL(file);
 
     reader.onloadend = async () => {
-      const base64Image = reader.result;
-      setSelectedImg(base64Image);
-      await updateProfile({ profilePic: base64Image });
+      const result = reader.result;
+      if (typeof result === "string") {
+        // ✅ Only assign if result is a string
+        setSelectedImg(result);
+        await updateProfile({ profilePic: result });
+      }
     };
+
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -34,10 +39,15 @@ function ProfileHeader() {
           <div className="avatar online">
             <button
               className="size-14 rounded-full overflow-hidden relative group"
-              onClick={() => fileInputRef.current.click()}
+              onClick={() => fileInputRef.current?.click()}
             >
               <img
-                src={selectedImg || authUser.profilePic || "/avatar.png"}
+                // ✅ Proper type narrowing and fallback
+                src={
+                  selectedImg ||
+                  authUser?.profilePic?.toString() ||
+                  "/avatar.png"
+                }
                 alt="User image"
                 className="size-full object-cover"
               />
@@ -58,9 +68,9 @@ function ProfileHeader() {
           {/* USERNAME & ONLINE TEXT */}
           <div>
             <h3 className="text-slate-200 font-medium text-base max-w-[180px] truncate">
-              {authUser.fullName}
+              {/* ✅ handle possibly null authUser safely */}
+              {authUser?.username || "Unknown User"}
             </h3>
-
             <p className="text-slate-400 text-xs">Online</p>
           </div>
         </div>
@@ -79,9 +89,12 @@ function ProfileHeader() {
           <button
             className="text-slate-400 hover:text-slate-200 transition-colors"
             onClick={() => {
-              // play click sound before toggling
-              mouseClickSound.currentTime = 0; // reset to start
-              mouseClickSound.play().catch((error) => console.log("Audio play failed:", error));
+              mouseClickSound.currentTime = 0;
+              mouseClickSound
+                .play()
+                .catch((error) =>
+                  console.log("Audio play failed:", error)
+                );
               toggleSound();
             }}
           >
@@ -96,4 +109,5 @@ function ProfileHeader() {
     </div>
   );
 }
+
 export default ProfileHeader;
