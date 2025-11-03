@@ -24,7 +24,7 @@ function ProfileHeader() {
       if (typeof result === "string") {
         // ✅ Only assign if result is a string
         setSelectedImg(result);
-        await updateProfile({ profilePic: result });
+        await updateProfile({ ProfilePic: result });
       }
     };
 
@@ -36,7 +36,7 @@ function ProfileHeader() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {/* AVATAR */}
-          <div className="avatar online">
+          <div className="relative">
             <button
               className="size-14 rounded-full overflow-hidden relative group"
               onClick={() => fileInputRef.current?.click()}
@@ -45,7 +45,7 @@ function ProfileHeader() {
                 // ✅ Proper type narrowing and fallback
                 src={
                   selectedImg ||
-                  authUser?.profilePic?.toString() ||
+                  authUser?.ProfilePic?.toString() ||
                   "/avatar.png"
                 }
                 alt="User image"
@@ -55,7 +55,7 @@ function ProfileHeader() {
                 <span className="text-white text-xs">Change</span>
               </div>
             </button>
-
+  <span className="absolute top-0 right-0 block w-3 h-3 bg-green-500 border-2 border-slate-900 rounded-full"></span>
             <input
               type="file"
               accept="image/*"
@@ -70,7 +70,10 @@ function ProfileHeader() {
             <h3 className="text-slate-200 font-medium text-base max-w-[180px] truncate">
               {/* ✅ handle possibly null authUser safely */}
               {authUser?.username || "Unknown User"}
+              
             </h3>
+            
+        
             <p className="text-slate-400 text-xs">Online</p>
           </div>
         </div>

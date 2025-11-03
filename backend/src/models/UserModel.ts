@@ -4,13 +4,13 @@ export interface UserType  {
     username: string,
     email: string,
     password: string,
-    profilePic: string
+    ProfilePic: string
 }
 const UserSchema = new Schema<UserType >({
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    profilePic: { type: String, default: "" }
+    ProfilePic: { type: String, default: "" }
 }, { timestamps: true })
 
 

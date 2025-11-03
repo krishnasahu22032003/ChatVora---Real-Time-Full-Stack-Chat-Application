@@ -175,7 +175,7 @@ export async function UpdateProfile(req: Request, res: Response) {
 
     const userId = req.user._id
     const UploadResponse = await cloudinary.uploader.upload(ProfilePic)
-    const updatedUser = await UserModel.findByIdAndUpdate(userId, { profilePic: UploadResponse.secure_url }, { new: true }).select("-password")
+    const updatedUser = await UserModel.findByIdAndUpdate(userId, { ProfilePic: UploadResponse.secure_url }, { new: true }).select("-password")
     res.status(200).json(updatedUser)
   } catch (error) {
     console.log("error in update profile", (error as Error).message)
@@ -185,7 +185,22 @@ export async function UpdateProfile(req: Request, res: Response) {
     })
 
   }
+}
+export const CheckUser = async (req:Request,res:Response)=>{
 
+   try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const user = await UserModel.findById(req.user._id).select("-password");
 
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
+    res.status(200).json(user);
+  } catch (error) {
+    console.error("Error in /check route:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 }
