@@ -11,7 +11,7 @@ interface ChatStore {
   isUsersLoading: boolean;
   isMessagesLoading: boolean;
   isSoundEnabled: boolean;
-
+  getMyChatPartner:()=>void
   toggleSound: () => void;
   setActiveTab: (tab: string) => void;
   setSelectedUser: (selectedUser: any | null) => void;
