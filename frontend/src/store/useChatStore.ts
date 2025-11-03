@@ -11,6 +11,7 @@ interface ChatStore {
   isUsersLoading: boolean;
   isMessagesLoading: boolean;
   isSoundEnabled: boolean;
+    getAllContacts: () => Promise<void>;
   getMyChatPartner:()=>void
   toggleSound: () => void;
   setActiveTab: (tab: string) => void;
@@ -39,16 +40,22 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   setActiveTab: (tab: string) => set({ activeTab: tab }),
   setSelectedUser: (selectedUser: any | null) => set({ selectedUser }),
   getAllContacts: async () => {
-    set({ isUsersLoading: true })
-    try {
-      const res = await AxiosInstance.get("/messages/contacts")
-      set({ allContacts: res.data })
-    } catch (error: any) {
-      toast.error(error.response.data.message)
-    } finally {
-      set({ isUsersLoading: false })
-    }
-  },
+  set({ isUsersLoading: true });
+  try {
+    const res = await AxiosInstance.get("/messages/contacts");
+
+    // ✅ Safely extract users array from response
+    const users = Array.isArray(res.data?.users) ? res.data.users : [];
+
+    set({ allContacts: users });
+  } catch (error: any) {
+    console.error("Error fetching contacts:", error);
+    toast.error(error.response?.data?.message || "Failed to load contacts");
+    set({ allContacts: [] });
+  } finally {
+    set({ isUsersLoading: false });
+  }
+},
   getMyChatPartner: async () => {
     set({ isUsersLoading: true })
     try {
