@@ -30,15 +30,14 @@ function ContactList() {
                 alt={contact.username || "User"}
                 className="w-12 h-12 rounded-full object-cover border border-slate-700"
               />
-              {/* 🟢 Online indicator (placeholder for now) */}
-              <span className="absolute bottom-1 right-1 w-3 h-3 bg-green-500 rounded-full ring-2 ring-slate-900"></span>
+     
             </div>
 
             <div>
               <h4 className="text-slate-100 font-semibold capitalize">
                 {contact.username}
               </h4>
-              <p className="text-slate-400 text-sm">{contact.email}</p>
+             
             </div>
           </div>
         ))
