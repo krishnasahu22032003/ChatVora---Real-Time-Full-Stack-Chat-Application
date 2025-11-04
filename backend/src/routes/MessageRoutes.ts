@@ -8,7 +8,7 @@ import { ArcjetProtection } from "../middlewares/ArcjetMiddleware.js"
 const messageRouter = express.Router()
 
 
- messageRouter.use(ArcjetProtection,AuthRoute)
+ messageRouter.use(AuthRoute)
 messageRouter.get("/contacts",getAllContacts)
 messageRouter.get("/chats",getChatPartner)
 messageRouter.get("/:id",getMessagesByUserId)

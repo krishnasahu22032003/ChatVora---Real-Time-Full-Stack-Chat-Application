@@ -3,9 +3,11 @@ import { useAuthStore } from "../store/useAuthStore"
 import { useEffect } from "react"
 import ChatHeader from "./ChatHeader"
 import NoChatHistoryPlaceHolder from "./NoChatHistoryPlaceHolder"
+import MessageInput from "./MessageInput"
+import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton"
 
 const ChatContainer = () => {
-  const { selectedUser, getMessagesByUserId, messages } = useChatStore()
+  const { selectedUser, getMessagesByUserId, messages,isMessagesLoading } = useChatStore()
   const { authUser } = useAuthStore()
 
   useEffect(() => {
@@ -16,7 +18,7 @@ const ChatContainer = () => {
     <>
       <ChatHeader />
       <div className="flex-1 px-6 overflow-y-auto py-8 bg-slate-950">
-        {messages.length > 0 ? (
+        {messages.length > 0 && !isMessagesLoading ? (
           <div className="max-w-3xl mx-auto space-y-6">
             {messages.map((msg) => {
               const isOwnMessage = msg.senderId === authUser?._id
@@ -49,14 +51,14 @@ const ChatContainer = () => {
                         isOwnMessage ? "text-cyan-200" : "text-slate-400"
                       }`}
                     >
-                      {new Date(msg.createdAt).toISOString().slice(11, 16)}
+                      {new Date(msg.createdAt).toLocaleDateString([],{hour:"2-digit",minute:"2-digit"})}
                     </p>
                   </div>
                 </div>
               )
             })}
           </div>
-        ) : (
+        ) : isMessagesLoading ? <MessagesLoadingSkeleton /> : (
           <NoChatHistoryPlaceHolder name={selectedUser.username} />
         )}
       </div>
