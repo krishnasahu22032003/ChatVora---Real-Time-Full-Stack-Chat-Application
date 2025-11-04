@@ -11,8 +11,9 @@ interface ChatStore {
   isUsersLoading: boolean;
   isMessagesLoading: boolean;
   isSoundEnabled: boolean;
-    getAllContacts: () => Promise<void>;
-  getMyChatPartner:()=>void
+  getAllContacts: () => Promise<void>;
+  getMyChatPartner:()=>void;
+  getMessagesByUserId:(userId : string)=>void;
   toggleSound: () => void;
   setActiveTab: (tab: string) => void;
   setSelectedUser: (selectedUser: any | null) => void;
@@ -70,7 +71,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
   },
 
-getMessagesByUserId:async (userId:string)=>{
+getMessagesByUserId:async (userId: string)=>{
   set({isMessagesLoading:true})
   try{
     const res =  await AxiosInstance.get(`/messages/${userId}`)
