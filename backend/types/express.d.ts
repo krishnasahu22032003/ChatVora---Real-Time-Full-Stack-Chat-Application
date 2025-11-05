@@ -1,4 +1,4 @@
-import {UserType} from "../models/UserModel"
+import {UserType} from "../src/models/UserModel.ts"
 import { Types } from "mongoose";
 declare global {
     namespace Express{
