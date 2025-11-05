@@ -5,7 +5,7 @@ declare module "socket.io" {
   interface Socket {
     user?: Document & {
       _id: Types.ObjectId;
-      name?: string;
+      username?: string;
       email?: string;
     };
     userId?: string;

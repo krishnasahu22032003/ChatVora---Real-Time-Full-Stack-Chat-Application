@@ -1,8 +1,7 @@
 import { UserModel } from "../models/UserModel.js";
 import { ENV } from "../lib/ENV.js";
 import jwt from "jsonwebtoken"
-import type { NextFunction } from "express";
-import type { Socket } from "socket.io";
+import type { Socket,ExtendedError } from "socket.io";
 import JWT_SECRET from "../config/config.js";
 import type { JwtPayload } from "jsonwebtoken";
 import type mongoose from "mongoose";
@@ -11,7 +10,7 @@ interface CustomJwtPayload extends JwtPayload {
   userId: string | mongoose.Types.ObjectId;
 }
 
-export const socketauthmiddleware = async (socket:Socket,next:NextFunction)=>{
+export const socketauthmiddleware = async (socket:Socket, next: (err?: ExtendedError) => void)=>{
 
 try{
 const token =  socket.handshake.headers.cookie?.split("; ").find((row)=>row.startsWith("jwt="))?.split("=")[1]

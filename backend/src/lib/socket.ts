@@ -17,3 +17,16 @@ const io = new Server(server, {
 
 
 io.use(socketauthmiddleware)
+
+
+const userSocketMap:Record<string,string> = {}
+
+io.on("connection",(socket)=>{
+console.log("A User connected",socket.user?.username)
+const userId = socket.userId
+if(!userId){
+      console.warn("⚠️ socket.userId is undefined, skipping map registration");
+    return;
+}
+userSocketMap[userId] = socket.id
+})
