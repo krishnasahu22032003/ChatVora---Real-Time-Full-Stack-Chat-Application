@@ -41,6 +41,6 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-       "include": ["src", "types", "types"],
+       "include": ["src", "types"],
       "exclude": ["node_modules"]
 }

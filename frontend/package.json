@@ -19,6 +19,7 @@
     "react-hot-toast": "^2.6.0",
     "react-router": "^7.9.4",
     "react-tsparticles": "^2.12.2",
+    "socket.io-client": "^4.8.1",
     "tailwindcss": "^4.1.15",
     "tsparticles": "^3.9.1",
     "tsparticles-engine": "^2.12.0",

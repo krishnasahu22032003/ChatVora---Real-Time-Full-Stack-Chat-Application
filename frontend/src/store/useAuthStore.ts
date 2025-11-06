@@ -4,7 +4,9 @@ import { persist } from "zustand/middleware";
 import { AxiosInstance } from "../lib/Axios";
 import axios from "axios";
 import toast from "react-hot-toast";
-
+import { io } from "socket.io-client";
+const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:3000" : "/"
+import { Socket } from "socket.io-client";
 export interface AuthUser {
   _id: string;
   username: string;
@@ -28,6 +30,10 @@ interface UpdateProfileData {
 }
 
 interface AuthState {
+  onlineusers:string[];
+  DisconnectSocket:()=>void;
+  ConnectSocket: ()=> void;
+  socket:Socket | null
   authUser: AuthUser | null;
   isCheckingAuth: boolean;
   isSigningup: boolean;
@@ -41,18 +47,22 @@ interface AuthState {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       authUser: null,
       isCheckingAuth: true,
       isSigningup: false,
       isLoggingIn: false,
-
+       socket:null,
+       onlineusers:[],
       // ✅ Check if user is authenticated
       checkAuth: async () => {
         set({ isCheckingAuth: true });
         try {
           const res = await AxiosInstance.get<AuthUser>("/user/check");
           set({ authUser: res.data });
+
+      get().ConnectSocket()
+
         } catch (error) {
           console.error("Auth check failed:", (error as Error).message);
           set({ authUser: null });
@@ -67,6 +77,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           await AxiosInstance.post("/user/signup", data);
           toast.success("Account Created Successfully!");
+            get().ConnectSocket()
         } catch (e: unknown) {
           if (axios.isAxiosError(e)) {
             toast.error(e.response?.data?.message || "Something went wrong!");
@@ -87,6 +98,8 @@ export const useAuthStore = create<AuthState>()(
           const res = await AxiosInstance.post<AuthUser>("/user/signin", data);
           set({ authUser: res.data });
           toast.success("Logged in Successfully!");
+
+            get().ConnectSocket()
         } catch (e: unknown) {
           if (axios.isAxiosError(e)) {
             toast.error(e.response?.data?.message || "Login failed!");
@@ -106,6 +119,8 @@ export const useAuthStore = create<AuthState>()(
           await AxiosInstance.post("/user/logout");
           set({ authUser: null });
           toast.success("Logged out successfully!");
+
+        get().DisconnectSocket()
         } catch (e: unknown) {
           if (axios.isAxiosError(e)) {
             toast.error(e.response?.data?.message || "Logout failed!");
@@ -136,10 +151,41 @@ export const useAuthStore = create<AuthState>()(
           }
         }
       },
+
+
+  ConnectSocket:()=>{
+ const{ authUser} = get()
+
+  if(!authUser || get().socket?.connected) return 
+
+  const socket = io(BASE_URL,{
+    withCredentials:true
+  })
+
+  socket.connect()
+
+  set({socket:socket})
+
+  socket.on("GetOnlineUsers",(userIds)=>{
+    set({onlineusers:userIds})
+  })
+},
+
+DisconnectSocket:()=>{
+if(get().socket?.connected) get().socket?.disconnect()
+
+
+
+},
+
     }),
+    
     {
       name: "auth-storage", // ✅ LocalStorage key name
       partialize: (state) => ({ authUser: state.authUser }), // only persist authUser
     }
   )
+
+
+  
 );

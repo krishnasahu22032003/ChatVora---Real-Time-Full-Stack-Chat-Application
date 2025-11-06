@@ -2,7 +2,7 @@
 import type { Request, Response } from "express";
 import { UserModel } from "../models/UserModel.js";
 import mongoose from "mongoose";
-import z, { success } from "zod";
+import z from "zod";
 import UserMessage from "../models/Message.js";
 import cloudinary from "../lib/cloudinary.js";
 

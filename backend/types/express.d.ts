@@ -3,7 +3,7 @@ import { Types } from "mongoose";
 declare global {
     namespace Express{
         interface Request{
-               user?: UserType & { _id: Types.ObjectId }; 
+               user: UserType & { _id: Types.ObjectId }; 
         }
     }
 }

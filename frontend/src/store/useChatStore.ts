@@ -3,7 +3,13 @@ import { AxiosInstance } from "../lib/Axios";
 import toast from "react-hot-toast";
 import { useAuthStore } from "./useAuthStore";
 
+
+
+
 interface ChatStore {
+
+
+  authUser: any;
   allContacts: any[];
   chats: any[];
   messages: any[];
@@ -12,8 +18,8 @@ interface ChatStore {
   isUsersLoading: boolean;
   isMessagesLoading: boolean;
   isSoundEnabled: boolean;
+  
   sendMessages: (messageData: { text?: string; image?: string | null }) => Promise<void>;
-
   getAllContacts: () => Promise<void>;
   getMyChatPartner:()=>void;
   getMessagesByUserId:(userId : string)=>void;
@@ -23,6 +29,7 @@ interface ChatStore {
 }
 
 export const useChatStore = create<ChatStore>((set, get) => ({
+  authUser: useAuthStore.getState().authUser,
   allContacts: [],
   chats: [],
   messages: [],
@@ -30,8 +37,6 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
-
-
   isSoundEnabled: localStorage.getItem("isSoundEnabled") === "true",
 
   toggleSound: () => {
@@ -108,7 +113,8 @@ set({messages:messages.concat(res.data)})
   set({messages:messages})
   toast.error((e.response?.data?.message)||"Something went wrong")
 }
-}
+},
+
 
 
 

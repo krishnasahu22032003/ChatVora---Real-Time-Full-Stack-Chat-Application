@@ -5,10 +5,10 @@ import { ENV } from "./lib/ENV.js"
 import cookieParser from "cookie-parser"
 import messageRouter from "./routes/MessageRoutes.js"
 import cors from "cors"
+import { app,server } from "./lib/socket.js"
 
 
 
-const app = express()
 
 const PORT = ENV.PORT || 5000
  
@@ -24,7 +24,7 @@ app.use('/api/user', UserRouter)
 app.use('/api/messages', messageRouter)
 
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`app running on ${PORT}`)
     connectDB()
 })

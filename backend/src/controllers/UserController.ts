@@ -113,12 +113,12 @@ export async function UserLogIn(req: Request, res: Response) {
         message: "Invalid Credentials"
       })
     }
-    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" })
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "7d" })
 
 
     res.cookie("auth_token", token, {
       httpOnly: true,
-      secure: ENV.NODE_ENV === "production" ? false : true,
+      secure: ENV.NODE_ENV === "production" ,
       sameSite: ENV.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });

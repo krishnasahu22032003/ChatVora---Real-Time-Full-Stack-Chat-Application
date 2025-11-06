@@ -13,12 +13,14 @@ interface CustomJwtPayload extends JwtPayload {
 export const socketauthmiddleware = async (socket:Socket, next: (err?: ExtendedError) => void)=>{
 
 try{
-const token =  socket.handshake.headers.cookie?.split("; ").find((row)=>row.startsWith("jwt="))?.split("=")[1]
+const token =  socket.handshake.headers.cookie?.split("; ").find((row)=>row.startsWith("auth_token="))?.split("=")[1]
+
 if(!token){
     console.log("token not present")
    return next(new Error("No Token Provided"))
 }
 const decoded = jwt.verify(token,JWT_SECRET as string) as CustomJwtPayload
+console.log(decoded)
 if(!decoded){
     console.log("Invalid Token")
     return next(new Error("Unauthorized  Invalid token"))
