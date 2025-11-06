@@ -5,10 +5,11 @@ import mongoose from "mongoose";
 import z from "zod";
 import UserMessage from "../models/Message.js";
 import cloudinary from "../lib/cloudinary.js";
+import { getReceiverSocketId, io } from "../lib/socket.js";
 
 // define the expected request body shape
 interface GetAllContactsBody {
-  _id: string;
+  _id: string ;
 }
 
 const idSchema = z.string().refine(
@@ -70,6 +71,9 @@ export const SendMessages = async (req: Request, res: Response) => {
 
     const { text, image } = req.body
     const { id: receiverId } = req.params
+    if (!receiverId) {
+  return res.status(400).json({ success: false, message: "Receiver ID is required" });
+}
     const senderId = req.user._id
 
 if(!text&&!image){
@@ -103,7 +107,12 @@ if(!receiverExists){
     })
     await newMessage.save()
 
-    res.status(200).json(newMessage)
+const ReceiverSocketId = getReceiverSocketId(receiverId)
+if(ReceiverSocketId){
+  io.to(ReceiverSocketId).emit("newMessage",newMessage)
+}
+
+    res.status(201).json(newMessage)
   } catch (error) {
     console.log("Error in sending Messages", (error as Error).message)
     res.status(500).json({ success: false, message: "Internal Server Error" })
