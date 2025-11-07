@@ -20,10 +20,13 @@ const ChatHeader = () => {
   }, [setSelectedUser]);
 
   return (
-    <div className="flex justify-between items-center bg-slate-800/80 border-b border-slate-700/50 max-h-[84px] px-6 flex-1">
+    <div className="flex justify-between items-center flex-1 max-h-[84px] px-6 
+  bg-gradient-to-b from-slate-900/80 to-slate-800/60 
+  border-b border-cyan-500/20 backdrop-blur-md shadow-[0_2px_10px_rgba(56,189,248,0.1)]">
+
       <div className="flex items-center space-x-3">
         {/* Avatar */}
-        <div className="relative w-12 h-12 rounded-full border border-slate-600">
+        <div className="relative w-12 h-12 rounded-full border  border-slate-600">
           <div className="overflow-hidden rounded-full">
             <img
               src={selectedUser?.profilePic || "/avatar.png"}

@@ -19,8 +19,9 @@ function App() {
   if(isCheckingAuth) return <PageLoading/>
   return (
     <>
-  <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden 
-  bg-[radial-gradient(ellipse_at_top_left,#0b0d16_0%,#05060b_40%,#03040a_100%)]">
+<div className="min-h-screen relative w-screen fixed inset-0 flex items-center justify-center overflow-hidden 
+bg-[radial-gradient(ellipse_at_top_left,#0b0d16_0%,#05060b_40%,#03040a_100%)]">
+
 
   {/* ✨ 1. Ambient color layers */}
   <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px]

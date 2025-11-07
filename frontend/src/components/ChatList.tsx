@@ -6,7 +6,7 @@ import NoChatsFound from "./NoChatsFound";
 
 const ChatList = () => {
   const { getMyChatPartner, chats, isUsersLoading, setSelectedUser } = useChatStore();
-  const { onlineusers } = useAuthStore(); // ✅ get online users from AuthStore
+  const { onlineusers } = useAuthStore();
 
   useEffect(() => {
     getMyChatPartner();
@@ -24,26 +24,32 @@ const ChatList = () => {
           <div
             key={chat._id}
             onClick={() => setSelectedUser(chat)}
-            className="flex items-center gap-3 bg-slate-800/50 hover:bg-slate-700/40 border border-slate-700/60 rounded-xl p-3 transition-all cursor-pointer shadow-md hover:shadow-cyan-500/20"
+            className="group flex items-center gap-3 bg-[#0e111a]/60 border border-white/5 
+                       hover:bg-[#0e111a]/80 hover:shadow-[0_0_20px_rgba(56,189,248,0.15)]
+                       rounded-xl p-2.5 cursor-pointer transition-all duration-300"
           >
-            <div className="relative w-12 h-12 rounded-full  border-2 border-cyan-500/40">
-              <img
-                src={chat.profilePic || "/avatar.png"}
-                alt={chat.fullName}
-                className="w-full h-full object-cover"
-              />
+            {/* Avatar */}
+      <div className="relative group">
+  <div className="w-12 h-12 rounded-full overflow-hidden ring-1 ring-slate-700/60 hover:ring-slate-500/70 transition-all">
+    <img
+      src={chat.profilePic || "/avatar.png"}
+      alt={chat.username}
+      className="w-full h-full object-cover"
+    />
+  </div>
 
-              {/* ✅ Green dot indicator */}
-              {isOnline && (
-                <span className="absolute top-0 right-0 w-3 h-3 bg-green-500 border-2 border-slate-800 rounded-full"></span>
-              )}
-            </div>
+  {isOnline && (
+    <span className="absolute top-0 right-1 block w-3 h-3 bg-green-500 border-2 border-[#0e111a] rounded-full"></span>
+  )}
+</div>
 
+
+            {/* Info */}
             <div className="flex-1 min-w-0">
-              <h4 className="text-slate-100 font-semibold truncate">
-                {chat.fullName}
+              <h4 className="text-slate-100 font-medium truncate group-hover:text-cyan-300 transition-colors duration-300">
+                {chat.username}
               </h4>
-              <p className="text-slate-400 text-sm truncate">Tap to chat</p>
+              <p className="text-slate-400/80 text-sm font-light truncate">Tap to start conversation</p>
             </div>
           </div>
         );
