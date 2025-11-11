@@ -7,7 +7,11 @@ import NoChatHistoryPlaceHolder from "./NoChatHistoryPlaceHolder";
 import MessageInput from "./MessageInput";
 import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton";
 
-const ChatContainer = () => {
+interface ChatContainerProps {
+  onBack?: () => void; // ✅ added optional onBack for mobile
+}
+
+const ChatContainer = ({ onBack }: ChatContainerProps) => {
   const {
     selectedUser,
     getMessagesByUserId,
@@ -19,7 +23,7 @@ const ChatContainer = () => {
   const { authUser } = useAuthStore();
 
   const messageEndRef = useRef<HTMLDivElement | null>(null);
-  const chatScrollRef = useRef<HTMLDivElement | null>(null); // ✅ new ref for chat area
+  const chatScrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (selectedUser?._id) {
@@ -29,7 +33,6 @@ const ChatContainer = () => {
     return () => unsubscribeFromMessages();
   }, [selectedUser, getMessagesByUserId, subscribeToMessages, unsubscribeFromMessages]);
 
-  // ✅ scroll only inside chat messages container
   useEffect(() => {
     if (chatScrollRef.current) {
       chatScrollRef.current.scrollTo({
@@ -40,13 +43,24 @@ const ChatContainer = () => {
   }, [messages]);
 
   return (
-    <div className="flex rounded-2xl flex-col h-full bg-[#0b0f18]">
+    <div className="flex rounded-2xl flex-col h-full bg-[#0b0f18] relative">
+      {/* ✅ Mobile back button (hidden on desktop) */}
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="absolute top-4 left-4 md:hidden z-20 text-cyan-400 hover:text-cyan-300 
+                     transition-colors duration-200"
+        >
+          ←
+        </button>
+      )}
+
       <ChatHeader />
 
       {/* ✅ Scrollable chat area */}
       <div
         ref={chatScrollRef}
-        className ="flex-1 overflow-y-auto relative scrollbar-hidden mt-1"
+        className="flex-1 overflow-y-auto relative scrollbar-hidden mt-1"
       >
         {messages.length > 0 && !isMessagesLoading ? (
           <div className="max-w-3xl mx-auto space-y-6">
