@@ -86,7 +86,7 @@ CLOUDINARY_CLOUD_NAME="your_cloudinary_cloud_name"
 CLOUDINARY_API_KEY="your_cloudinary_api_key"
 CLOUDINARY_API_SECRET="your_cloudinary_api_secret"
 
----
+```
 
 ## 🚀 Installation Guide
 
@@ -135,9 +135,10 @@ chatvora/
 ├── README.md
 └── package.json
 
----
 
-🧠 How It Works
+
+## 🧠 How It Works
+
 🔐 Signup / Login
 
 - Securely handled via custom JWT authentication.
@@ -191,9 +192,9 @@ Use MongoDB Atlas for database hosting.
 
 Ensure .env variables are configured properly on all platforms.
 
----
 
-##🧑‍💻 Author
+
+## 🧑‍💻 Author
 
 Developed by: Krishna
 📧 Email: krishna.sahu.work@gmail.com
@@ -202,13 +203,13 @@ Developed by: Krishna
 
 ---
 
-🪩 License
+## 🪩 License
 
 This project is open-source under the MIT License.
 Feel free to fork, enhance, and contribute — just don’t forget to ⭐ the repo!
 
 ---
-##💫 Acknowledgements
+## 💫 Acknowledgements
 
 Socket.io
 
@@ -223,5 +224,6 @@ Zustand
 MongoDB Atlas
 
 Arcjet
+
 
 <h3 align="center">💬 ChatVora — Where Conversations Feel Alive.</h3> ```
