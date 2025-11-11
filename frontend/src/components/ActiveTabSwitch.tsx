@@ -13,7 +13,7 @@ function ActiveTabSwitch() {
       className={`px-6 py-2.5 rounded-lg font-medium capitalize transition-all duration-300
         ${
           activeTab === tab
-            ? "bg-gradient-to-r from-cyan-500/30 to-purple-500/30 text-cyan-300 shadow-[0_0_12px_rgba(56,189,248,0.3)]"
+            ? "bg-linear-to-r from-cyan-500/30 to-purple-500/30 text-cyan-300 shadow-[0_0_12px_rgba(56,189,248,0.3)]"
             : "text-slate-400 hover:text-cyan-300 hover:bg-cyan-400/10"
         }`}
     >

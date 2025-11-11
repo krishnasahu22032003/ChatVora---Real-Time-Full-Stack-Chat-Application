@@ -6,7 +6,8 @@ import { useChatStore } from "../store/useChatStore";
 const mouseClickSound = new Audio("/sounds/mouse-click.mp3");
 
 function ProfileHeader() {
-  const { logout, authUser, updateProfile } = useAuthStore();
+  const { logout, authUser, updateProfile, hasHydrated, isCheckingAuth } =
+    useAuthStore();
   const { isSoundEnabled, toggleSound } = useChatStore();
 
   const [selectedImg, setSelectedImg] = useState<string | null>(null);
@@ -27,22 +28,36 @@ function ProfileHeader() {
     reader.readAsDataURL(file);
   };
 
+  // ✅ Loading state during hydration or checkAuth
+  if (!hasHydrated || isCheckingAuth) {
+    return (
+      <div className="p-5 text-slate-400 text-sm flex justify-center items-center">
+        Loading user...
+      </div>
+    );
+  }
+
+  // ✅ No logged-in user
+  if (!authUser) {
+    return (
+      <div className="p-5 text-slate-400 text-sm flex justify-center items-center">
+        Not logged in
+      </div>
+    );
+  }
+
+  // ✅ Main header UI
   return (
     <header className="border-b rounded-2xl border-slate-700/40 bg-linear-to-r from-[#0e111a] to-[#131722] p-5 mt-2 flex items-center justify-between">
       {/* LEFT: Profile */}
       <div className="flex items-center gap-4">
-        {/* Avatar */}
         <div className="relative group">
           <button
             onClick={() => fileInputRef.current?.click()}
             className="size-14 rounded-full overflow-hidden ring-1 ring-slate-700/60 hover:ring-slate-500/70 transition-all"
           >
             <img
-              src={
-                selectedImg ||
-                authUser?.ProfilePic?.toString() ||
-                "/avatar.png"
-              }
+              src={selectedImg || authUser.ProfilePic || "/avatar.png"}
               alt="User"
               className="w-full h-full object-cover"
             />
@@ -50,7 +65,6 @@ function ProfileHeader() {
               Change
             </div>
           </button>
-
           <span className="absolute top-0 right-1 block w-3 h-3 bg-green-500 border-2 border-[#0e111a] rounded-full"></span>
           <input
             type="file"
@@ -61,10 +75,9 @@ function ProfileHeader() {
           />
         </div>
 
-        {/* User Info */}
         <div className="flex flex-col justify-center">
           <h3 className="text-slate-100 font-semibold text-lg tracking-wide">
-            {authUser?.username || "Unknown User"}
+            {authUser.username || "Unknown User"}
           </h3>
           <p className="text-slate-400 text-xs">Online</p>
         </div>

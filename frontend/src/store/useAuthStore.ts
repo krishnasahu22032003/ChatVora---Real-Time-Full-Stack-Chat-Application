@@ -1,17 +1,17 @@
-// store/useAuthStore.ts
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { AxiosInstance } from "../lib/Axios";
-import axios from "axios";
 import toast from "react-hot-toast";
-import { io } from "socket.io-client";
-const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:3000" : "/"
-import { Socket } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
+
+const BASE_URL =
+  import.meta.env.MODE === "development" ? "http://localhost:3000" : "/";
+
 export interface AuthUser {
   _id: string;
   username: string;
   email: string;
-  ProfilePic?: string | null; 
+  ProfilePic?: string | null;
 }
 
 export interface SignUpRequest {
@@ -26,166 +26,144 @@ export interface LoginRequest {
 }
 
 interface UpdateProfileData {
-  ProfilePic?: string | null; 
+  ProfilePic?: string | null;
 }
 
 interface AuthState {
-  onlineusers:string[];
-  DisconnectSocket:()=>void;
-  ConnectSocket: ()=> void;
-  socket:Socket | null
   authUser: AuthUser | null;
+  socket: Socket | null;
+  onlineusers: string[];
   isCheckingAuth: boolean;
   isSigningup: boolean;
   isLoggingIn: boolean;
+  hasHydrated: boolean;
+
+  setHasHydrated: (v: boolean) => void;
+  checkAuth: () => Promise<void>;
   signup: (data: SignUpRequest) => Promise<void>;
   login: (data: LoginRequest) => Promise<void>;
   logout: () => Promise<void>;
-  checkAuth: () => Promise<void>;
   updateProfile: (data: UpdateProfileData) => Promise<void>;
+  ConnectSocket: () => void;
+  DisconnectSocket: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       authUser: null,
-      isCheckingAuth: true,
+      socket: null,
+      onlineusers: [],
+      isCheckingAuth: false, // ✅ start as false (don’t block hydration)
       isSigningup: false,
       isLoggingIn: false,
-       socket:null,
-       onlineusers:[],
-      // ✅ Check if user is authenticated
-      checkAuth: async () => {
-        set({ isCheckingAuth: true });
-        try {
-          const res = await AxiosInstance.get<AuthUser>("/user/check");
-          set({ authUser: res.data });
+      hasHydrated: false,
 
-      get().ConnectSocket()
+      setHasHydrated: (v) => set({ hasHydrated: v }),
 
-        } catch (error) {
-          console.error("Auth check failed:", (error as Error).message);
-          set({ authUser: null });
-        } finally {
-          set({ isCheckingAuth: false });
-        }
-      },
+      // ✅ Check Auth (called only after hydration)
+     checkAuth: async () => {
+  set({ isCheckingAuth: true });
+  try {
+    const res = await AxiosInstance.get<AuthUser>("/user/check");
+    set({ authUser: res.data });
+    get().ConnectSocket();
+  } catch (err: any) {
+    // don't blindly clear persisted authUser on transient errors
+    // if server returned 401 then clear; otherwise keep persisted value
+    if (err?.response?.status === 401) {
+      set({ authUser: null });
+    } else {
+      console.warn("checkAuth failed, keeping persisted authUser if present:", err);
+    }
+  } finally {
+    set({ isCheckingAuth: false });
+  }
+},
 
-      // ✅ Signup function
-      signup: async (data: SignUpRequest) => {
+      // ✅ Signup
+      signup: async (data) => {
         set({ isSigningup: true });
         try {
           await AxiosInstance.post("/user/signup", data);
-          toast.success("Account Created Successfully!");
-            get().ConnectSocket()
-        } catch (e: unknown) {
-          if (axios.isAxiosError(e)) {
-            toast.error(e.response?.data?.message || "Something went wrong!");
-          } else if (e instanceof Error) {
-            toast.error(e.message);
-          } else {
-            toast.error("An unknown error occurred");
-          }
+          toast.success("Account created successfully!");
+        } catch (err: any) {
+          toast.error(err.response?.data?.message || "Signup failed!");
         } finally {
           set({ isSigningup: false });
         }
       },
 
-      // ✅ Login function
-      login: async (data: LoginRequest) => {
-        set({ isLoggingIn: true });
-        try {
-          const res = await AxiosInstance.post<AuthUser>("/user/signin", data);
-          set({ authUser: res.data });
-          toast.success("Logged in Successfully!");
+// inside useAuthStore: replace the existing `login` implementation with this
+login: async (data) => {
+  set({ isLoggingIn: true });
+  try {
+    const res = await AxiosInstance.post("/user/signin", data);
 
-            get().ConnectSocket()
-        } catch (e: unknown) {
-          if (axios.isAxiosError(e)) {
-            toast.error(e.response?.data?.message || "Login failed!");
-          } else if (e instanceof Error) {
-            toast.error(e.message);
-          } else {
-            toast.error("An unknown error occurred");
-          }
-        } finally {
-          set({ isLoggingIn: false });
-        }
-      },
+    // If signin returns a full user object, use it. Otherwise, fetch via checkAuth.
+    // (This covers both server implementations.)
+    if (res?.data && typeof res.data === "object" && res.data.username) {
+      set({ authUser: res.data });
+      // connect socket after authUser is set
+      get().ConnectSocket();
+    } else {
+      // Signin didn't return user object => call checkAuth to get it
+      await get().checkAuth();
+    }
 
-      // ✅ Logout function
+    toast.success("Logged in successfully!");
+  } catch (err: any) {
+    toast.error(err.response?.data?.message || "Login failed!");
+  } finally {
+    set({ isLoggingIn: false });
+  }
+},
+
+      // ✅ Logout
       logout: async () => {
         try {
           await AxiosInstance.post("/user/logout");
           set({ authUser: null });
           toast.success("Logged out successfully!");
-
-        get().DisconnectSocket()
-        } catch (e: unknown) {
-          if (axios.isAxiosError(e)) {
-            toast.error(e.response?.data?.message || "Logout failed!");
-          } else if (e instanceof Error) {
-            toast.error(e.message);
-          } else {
-            toast.error("An unknown error occurred");
-          }
+          get().DisconnectSocket();
+        } catch (err: any) {
+          toast.error(err.response?.data?.message || "Logout failed!");
         }
       },
 
-      // ✅ Update Profile Picture (Cloudinary)
-      updateProfile: async (data: UpdateProfileData): Promise<void> => {
+      // ✅ Update Profile
+      updateProfile: async (data) => {
         try {
           const res = await AxiosInstance.put("/user/UpdateProfile", data);
-          // Merge the updated profile with existing user info
-          set((state) => ({
-            authUser: { ...state.authUser, ...res.data },
-          }));
-          toast.success("Profile updated successfully");
-        } catch (error) {
-          if (axios.isAxiosError(error)) {
-            console.log("Error in update profile:", error);
-            toast.error(error.response?.data?.message || "Something went wrong");
-          } else {
-            console.error("Unexpected error:", error);
-            toast.error("An unexpected error occurred");
-          }
+          set((s) => ({ authUser: { ...s.authUser!, ...res.data } }));
+          toast.success("Profile updated successfully!");
+        } catch (err: any) {
+          toast.error(err.response?.data?.message || "Update failed!");
         }
       },
 
+      // ✅ Socket
+      ConnectSocket: () => {
+        const { authUser } = get();
+        if (!authUser || get().socket?.connected) return;
+        const socket = io(BASE_URL, { withCredentials: true });
+        socket.on("GetOnlineUsers", (userIds) => set({ onlineusers: userIds }));
+        socket.connect();
+        set({ socket });
+      },
 
-  ConnectSocket:()=>{
- const{ authUser} = get()
-
-  if(!authUser || get().socket?.connected) return 
-
-  const socket = io(BASE_URL,{
-    withCredentials:true
-  })
-
-  socket.connect()
-
-  set({socket:socket})
-
-  socket.on("GetOnlineUsers",(userIds)=>{
-    set({onlineusers:userIds})
-  })
-},
-
-DisconnectSocket:()=>{
-if(get().socket?.connected) get().socket?.disconnect()
-
-
-
-},
-
+      DisconnectSocket: () => {
+        if (get().socket?.connected) get().socket?.disconnect();
+      },
     }),
-    
+
     {
-      name: "auth-storage", // ✅ LocalStorage key name
-      partialize: (state) => ({ authUser: state.authUser }), // only persist authUser
+      name: "auth-storage",
+      partialize: (state) => ({ authUser: state.authUser }),
+      onRehydrateStorage: () => (state, error) => {
+        if (error) console.error("Hydration error:", error);
+        if (state) state.setHasHydrated(true); // ✅ crucial fix
+      },
     }
   )
-
-
-  
 );
